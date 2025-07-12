@@ -1,0 +1,38 @@
+{% extends 'tickets/base.html' %}
+{% block title %}Ticket Detail{% endblock %}
+{% block content %}
+<h3>{{ ticket.title }}</h3>
+<p><strong>Status:</strong> {{ ticket.status }}</p>
+<p><strong>Description:</strong> {{ ticket.description }}</p>
+{% if ticket.attachment %}
+<p><strong>Attachment:</strong> <a href="{{ ticket.attachment.url }}" download>Download</a></p>
+{% endif %}
+
+{% if user.is_staff %}
+<div class="my-3">
+    <strong>Change Status:</strong>
+    <a href="{% url 'change_status' ticket.id 'open' %}" class="btn btn-sm btn-outline-secondary">Open</a>
+    <a href="{% url 'change_status' ticket.id 'in_progress' %}" class="btn btn-sm btn-outline-warning">In Progress</a>
+    <a href="{% url 'change_status' ticket.id 'resolved' %}" class="btn btn-sm btn-outline-success">Resolved</a>
+</div>
+{% endif %}
+
+<hr>
+<h5>Conversation:</h5>
+{% for reply in replies %}
+    <div class="border p-2 mb-2">
+        <strong>{{ reply.user.username }}</strong> ({{ reply.created_at|date:"d M Y H:i" }})
+        <p>{{ reply.message }}</p>
+    </div>
+{% empty %}
+    <p class="text-muted">No replies yet.</p>
+{% endfor %}
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Reply</button>
+</form>
+
+<a href="{% url 'dashboard' %}" class="btn btn-link mt-3">← Back to Dashboard</a>
+{% endblock %}

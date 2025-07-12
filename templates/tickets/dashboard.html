@@ -1,0 +1,42 @@
+{% extends 'tickets/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h3 class="mb-4">Your Tickets</h3>
+
+{% if not user.is_staff %}
+<a href="{% url 'create_ticket' %}" class="btn btn-primary mb-3">+ Create Ticket</a>
+{% endif %}
+
+<form method="get" class="mb-3">
+    <select name="status" class="form-select w-auto d-inline">
+        <option value="">-- Filter by Status --</option>
+        <option value="open">Open</option>
+        <option value="in_progress">In Progress</option>
+        <option value="resolved">Resolved</option>
+    </select>
+    <button type="submit" class="btn btn-outline-secondary">Filter</button>
+</form>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ticket in tickets %}
+        <tr>
+            <td>{{ ticket.title }}</td>
+            <td><span class="badge text-bg-info">{{ ticket.status }}</span></td>
+            <td>{{ ticket.created_at|date:"d M Y H:i" }}</td>
+            <td><a href="{% url 'ticket_detail' ticket.id %}" class="btn btn-sm btn-outline-primary">View</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-center text-muted">No tickets found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
